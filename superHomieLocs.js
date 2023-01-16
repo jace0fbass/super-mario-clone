@@ -135,4 +135,64 @@ const maps = [
     origin('bot')
   ])
 
+  action('mushroom', (m) => {
+m.move(20, 0)
+  })
+
+  player.on("headbump", (obj) => {
+    if (obj.is('coin-surprise')) {
+        gameLevel.spawn('$', obj.gridPos.sub(0, 1))
+        destroy(obj)
+        gameLevel.spawn('}', obj.gridPos.sub(0, 0))
+    }
+  })
+
+  player.collides('mushroom', (m) => {
+    destroy(m)
+    player.biggify(6)
+  })
+
+  player.collides('coin', (c) => {
+    destroy(c)
+    scoreLabel.value++
+    scoreLabel.text = scoreLabel.value
+  })
+
+  action('dangerous', (d) => {
+    d.move(-ENEMY_SPEED, 0)
+  })
+
+  player.collides('dangerous', (d) => {
+    if (isJumping) {
+        destroy(d)
+    } else {
+        go('lose', {score: scoreLabel.value})
+    }
+  })
+
+  player.action(() => {
+    camPos(player.pos)
+    if (player.pos.y >= FALL_DEATH) {
+        go('lose', {score: scoreLabel.value})
+    }
+  })
+
+  player.collides('pipe', () => {
+    keyPress('down', () => {
+        go('game', {
+
+            level: (level +1) % maps.length,
+            score: scoreLabel.value
+        })
+    })
+  })
+
+  keyDown('left', () => {
+    player.move(-MOVE_SPEED, 0)
+  })
+
+  keyDown('right', () => {
+    player.move(MOVE_SPEED, 0)
+  })
+
   
